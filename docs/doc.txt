@@ -1,2 +1,149 @@
-67
+Ejercicio 1
+1. ¿Qué problema resuelve el programa?
+R\\ EL programa implementa el Cifrado Cesar, un metodo de critografia que oculta un mensaje desplazando cada letra un numero k de posiciones dentro del alfabeto
+el programa permite cifrar texto conociendo k, descifrar texto conociendo k y usar fuerza bruta si no se conoce el k de un mensaje cifrado
+2. ¿Qué idea matemática usa?
+R\\ Usa aritmetica modular. Cada letra se representa por su posicion en el alfabeto y al cifrar se le suma esa k posicion y como el alfabeto es finito al llegar a la ultima letra regresa a la primera
+es exactamente lo que hace la operacion modulo 26 (en el codigo se implementa manualmente restando 26 en vez de usar el operador %, pero tiene el mismo resultado).
+matematicamente, cifrar una letra en la posicion p con desplazamiento k equivale a calcular (p+k) mod 26
+3. ¿Cómo se ejecuta?
+R\\ ...
+4. ¿Qué pruebas hicieron?
+R\\ ...
+5. ¿Qué limitaciones tiene la solución?
+R\\ el programa solo maneja el alfabeto sin ñ, osea que al intentar cifrar un mensaje con simbolos, letras con tildes o caracteres de otros alfabetos quedarian igual
+tambien el mensaje siempre queda reducido a minusculas
+6. ¿Por qué el descifrado usa el desplazamiento contrario, y por qué es posible el ataque de fuerza bruta?
+R\\ el descifrado usa el desplazamiento contrario porque el cifrado cesar es una operacion reversible, si al cifrar se mueve k posiciones hacia adelante, al descifrar basta con volver (restar) esas k posiciones adelantadas
+en el codigo eso se ve al llamar cesar_code con -k en vez de k
+el ataque de fuerza bruta es posible por el alfabeto al solo tener 26 posiciones, la cantidad de posibilidades es exactamente esa 
+y al ser una cantidad de posibilidades tan pequeña no se necesita ninguna estrategia complicada, vasta con generar las 26 posibilidades, algo que una computadora hace en milisegundos
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Ejercicio_3
+1. ¿Qué problema resuelve el programa?
+R\\ El programa simula un protocolo de computacion multipartita segura(MPC) para calcular la suma y el promedio de un grupo de notas
+sin que ningun servidor llegue a conocer las notas originales del los estudiantes.
+Resuelve el problema de calcular algo entre varias partes sin revelar datos privados de cada una 
+2. ¿Qué idea matemática usa?
+R\\ Usa la idea de comparticion de secretos aditiva con aritmetica modular
+cada nota x se divide en tres partes s1,s2,s3 generadas de forma que x ≡ s1+s2+s3 mod M
+s1 y s2 se generan completamente al azar y la tercera (s3) se calcula como lo que falta para que la suma module a x: s3 = x - s1 -s2
+gracias a que s1 y s2 son generados al azar estos no dan ninguna informacion sobre x, parece un simple numero entre 0 y M
+y al sumar estas 3 partes modulo M da la nota original. Esta propiedad se puede extender a listas de tal forma que al sumar todas las partes que tiene cada servidor y luego sumando esos 3 resultados
+se reconstruye la suma total sin que ningun servidor haya visto una nota completa
+3. ¿Cómo se ejecuta?
+R\\ ...
+4. ¿Qué pruebas hicieron?
+R\\ ...
+5. ¿Qué limitaciones tiene la solución?
+R\\ Al ser esto una simulacion la solucion carece de algunos protocolos de seguridad real como capas de comunicacion cifrada y autenticacion de servidores
+tambien M = 1000003 es un numero fijo y relativamente pequeño comparado con los estandares de criptografia 
+6. Ejemplo de cómo una nota x se escribe como s1 + s2 + s3 (mod M) sin revelar x
+R\\ Supongamos que un estudiante tiene una nota x = 40, y usamos un modulo pequeño para el ejemplo, digamos M = 100 (en el programa real se usa M = 1000003, pero la idea es la misma)
+Se generan dos números aleatorios, por ejemplo s1 = 63 y s2 = 22. Luego se calcula la tercera parte para que la suma module correctamente a x:
+s3 = (x - s1 - s2) mod M
+s3 = (40 - 63 - 22) mod 100
+s3 = (-45) mod 100
+s3 = 55
+Ahora el servidor 1 tiene 63, el servidor 2 tiene 22, y el servidor 3 tiene 55. Ninguno de estos tres números, visto de forma aislada, se parece a 40 ni da ninguna pista sobre su valor — podrían corresponder a cualquier nota posible, 
+ya que s1 y s2 fueron elegidos completamente al azar. Solo al sumar los tres y aplicar el módulo se recupera el valor original:
+(63 + 22 + 55) mod 100 = 140 mod 100 = 40
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Ejercicio_5
+1. ¿Qué problema resuelve el programa?
+R\\ El programa mide el impacto de cerrar un punto importante de una red (en este caso, una estacion de transporte) sobre las rutas mas cortas entre 5 casos de origen destino 
+Permite comparar para todos los casos cuanto cambia la distancia de la ruta antes y despues del cierre e identifica que casos quedan sin conexion posible tras el cierre
+2. ¿Qué idea matemática usa?
+R\\ Usa el algoritmo de Dijkstra (implementado en calcular_ruta_mas_corta, reutilizada del ejercicio anterior) para calcular caminos minimos en un grafo ponderado
+aplicado dos veces, una sobre el grafo original y otra sobre el grafo modificado. La "eliminacion" de una estacion se modela como la eliminacion de un vertice del grafo
+es decir, se quita tanto el nodo (la key del diccionario) como como todas las aristas que lo conectaban con sus vecinos (las referencias a ese nodo dentro de los diccionarios de conexion)
+3. ¿Cómo se ejecuta?
+R\\ ...
+4. ¿Qué pruebas hicieron?
+R\\ ...
+5. ¿Qué limitaciones tiene la solución?
+R\\ El programa solo soporta el cierre de las estaciones (vertices), no de aristas individuales
+Tambien se asume que el grafo es no dirigido, que es un requisito para que Dijkstra funcione correctamente
+6.¿Cuál vértice/arista cerraron y por qué produce o no produce impacto?
+R\\ Se cerro la estacion "Centro", fue elegida por ser el nodo con mas conexiones directas del grafo (Calle26, Universidad, Museo, Biblioteca y Parque)
+El impacto no fue uniforme entre los casos probados, es decir que no se afectaron todas las rutas por igual, sino que depende de si esa ruta especifica dependia o no del nodo
+los casos cuya ruta optima no atravesaba centro (como Portal-Estadio o Universidad-Parque) no se vieron afectadas en lo absoluto, porque tenian caminos alternativos iguales
+En cambio, Museo-Universidad si dependia fuertemente de centro como atajo y al cerrarse tuvo que desviarse pasando de 18 a 37 (un aumento del 105%) el peso de esta ruta
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Ejercicio_7
+1. ¿Qué problema resuelve el programa?
+R\\ El programa genera tablas de verdad para expresiones booleanas con hasta 4 variables, mostrando el resultado de la expresion para cada combinacion posible de los valores de entrada
+Tambien permite evaluar cualquiera de esas expresiones en una entrada concreta, sin necesidad de generar la tabla completa
+Esto resuelve el problema de verificar sistematicamente todas las posibilidades de una expresion logica
+2. ¿Qué idea matemática usa?
+R\\  Usa logica booleana y combinaciones. Cada variable booleana tiene exactamente 2 valores posibles (True,False) asi que una expresion con n variables tiene 2^n combinaciones
+por eso la expresion con 3 variables genera 8 filas y la de 4 variables 16 filas
+El programa recorre todas las combinaciones usando ciclos for anidados, uno por cada variable evaluando la expresion en cada una 
+3. ¿Cómo se ejecuta?
+R\\ ...
+4. ¿Qué pruebas hicieron?
+R\\ ...
+5. ¿Qué limitaciones tiene la solución?
+R\\ Cada expresion debe ser previamente definida como una funcion de python dentro del codigo debido a que el programa no tiene implementado un evaluador generico de expresiones booleanas
+Esto tambien significa agregar un caso nuevo en los if/elif de tables y concrete_expression en vez de simplemente pasar la expresion como parametro
+Ademas el numero de variables esta limitado a 4 de forma fija
+6. ¿Cómo se relaciona una tabla de verdad con un circuito lógico?
+R\\ Una tabla de verdad y un circuito logico son dos representaciones distintas de la misma informacion: 
+el comportamiento de una funcion booleana.En un circuito digital, cada variable de entrada corresponde a una señal electrica que puede estar en uno de dos estados (0 o 1)
+y cada conector logico corresponde a una compuerta logica fisica o simulada que combina esas señales
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Ejercicio_9
+1. ¿Qué problema resuelve el programa?
+R\\ El programa mide cuanta informacion (o incertidumbre) contiene un texto usando la entropia de Shannon. Calcula la frecuencia y la probabilidad de aparicion de cada simbolo
+Y a partir de esa probabilidad obtiene un numero que la representa, en promedio, cuantos bits se necesita para representar cada simbolo si se codificara de manera optima
+Tambien permite comparar la entropia de dos textos distintos para determinar cual es mas "impredecible". 
+Como extencion tambien se implemento codificacion de Huffman, un metodo real de comprension que aprovecha esta idea para asignar codigos mas cortos a los simbolos mas frecuentes
+2. ¿Qué idea matemática usa?
+R\\ Usa la formula de entropia de Shannon: H = -Σ pi log2(pi) donde pi es la probabilidad de cada simbolo distinto en el texto
+Esta formula funciona de tal manera que un simbolo que se repite mucho aporta poca informacion nueva cuando aparece, en cambio un simbolo raro aporta mas informacion
+esto gracias al log2(pi) ya que entre mas pequeña sea la probabilidad, mas negativa y mas grande en magnitud es su logaritmo
+Para la extencion se usa un arbol de Huffman: un algoritmo que construye un arbol binario uniendo repetidamentelos dos simbolos menos frecuentes, hasta formar un solo arbol
+Recorre ese arbol desde la raiz hasta cada simbolo marcando 0 o 1 si va a la izquierda o derecha lo que genera un codigo binario para cada simbolo, donde los simbolos mas frecuentes
+terminan con codigos mas cortos porque quedan mas cerca de la raiz
+3. ¿Cómo se ejecuta?
+R\\ ...
+4. ¿Qué pruebas hicieron?
+R\\ ...
+5. ¿Qué limitaciones tiene la solución?
+R\\ El calculo de la entropia trata cada simbolo de forma completamente independiente, no considera el contenido ni la relacion entre simbolos consecutivos
+por lo que un texto con patrones predecibles pero muchos simbolos distintos como "ababababa" podria dar una entropia similar a un texto sin ningun patron
+6. ¿Por qué la entropía mide incertidumbre y no simplemente longitud del texto?
+R\\ La entropia no depende de cuantos caracteres tiene el texto, sino de que tan predecibles son los caracateres
+un texto largo pero repetitivo como "aaaaaaaaaaaaa" tiene seguramente entropia 0 o cercana a esta, porque una vez que sabes el simbolo "a", siempre vas a acertar
+En cambio un texto mas corto y sin ningun patron como "qoiwhe" tiene una entropia alta porque cada nuevo caracter es practicamente imposible de adivinar antes de verlo
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Ejercicio_10
+1. ¿Qué problema resuelve el programa?
+R\\ El programa simula el comportamiento basico de un qubit, la unidad fundamental de informacion en computacion cuantica, sin necesidad de hardware cuantico real
+Permite representar el estado de un qubit como un vector, aplicarle las compuertas X, Z y H, 
+Calcular las probabilidades de obtener cada resultado al medirlo y simular mil mediciones para observar como esas probabilidades se reflejan en frecuencias reales de resultados 0 y 1
+2. ¿Qué idea matemática usa?
+R\\ Un qubit se representa como un vector de dos entradas [α, β] donde α y β son numeros asociados a los estados |0⟩ y |1⟩ 
+Aplicar una compuerta cuantica equivale a multiplicar una matriz 2x2 por ese vector
+Las probabilidades de medir cada resultado se obtienen elevando al cuadrado cada componente del vector |α|² y |β|² las cuales siempre suman 1 ya que representan la distribucion de probabilidad completa
+Finalmente para simular las mil mediciones se usa muestreo aleatorio ponderado: se generan 1000 valores entre 0 y 1 siguiendo esas probabilidades calculadas,
+imitando el hecho de que en mecanica cuantica el resultado de medir un qubit es intrinsecamente probabilistico, no determinista
+3. ¿Cómo se ejecuta?
+R\\ ...
+4. ¿Qué pruebas hicieron?
+R\\ ...
+5. ¿Qué limitaciones tiene la solución?
+R\\ El simulador solo trabaja con numeros reales, no con numeros complejos, en una descripcion cuantica α y β pueden ser numeros complejos
+Ademas el simulador solo maneja un qubit, no representa sistemas de multiples qubits ni fenomenos que representan vectores de dimension mayor y matrices mas grandes
+Las probabilidades calculadas tambien pueden tener pequeños errores de precision numerica
+6. ¿Diferencia entre probabilidad cuántica simulada y ejecución en un computador cuántico real?
+R\\ En este programa las "probabilidades cuanticas" son en realidad numeros calculados con algebra lineal basica 
+y las mil mediciones se generan con un generador de numeros pseudoaleatorios corriendo en una computadora normal
+Es decir, todo este proceso es completamente determinista y transparente: se sabe desde un principio cuales son las probabilidades exactas porque se calculan explicitamente
+y el azar viene unicamente del algoritmo de numeros pseudoaleatorios.
+En un computador cuantico real, el qubit es un sistema fisico real (como un electron, foton o un circuito superconductor) cuyo estado evoluciona segun las leyes de la mecanica cuantica
+Al aplicar una compuerta, se manipula fisicamente ese sistema y al medirlo ese resultado es intrinsecamente aleatorio por la naturaleza misma de la fisica cuantica
+Es una incertidumbre fundamental del universo, que ademas esta sujeta a ruido fisico real(interferecias de entorno) que pueden alterar los resultados
+En conclusion: este programa reproduce predicciones matematicas de la teoria cuantica de forma exacta, pero no reproduce el mecanismo fisico real detras de esas predicciones, ni sus imperfecciones practicas
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
